@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Auxi from "../../hoc/Auxi";
 import Burger from "../../components/Burger/Burger";
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
+import Modal from "../../components/UI/Modal/Modal";
 
 const INGREDIENT_PRICES = {
   salad: 0.5,
@@ -18,14 +19,28 @@ class BurgerBuilder extends Component {
       meat: 0,
     },
     totalPrice: 4,
+    purchaseable: true,
   };
+
+  updatePurchaseState(ingredients) {
+    const sum = Object.keys(ingredients)
+      .map((igKey) => {
+        return ingredients[igKey];
+      })
+      .reduce((acc, curr) => {
+        return acc + curr;
+      }, 0);
+
+    this.setState({ purchaseable: !sum > 0 });
+  }
+
   addIngredientsHandler = (type) => {
     const updatedIngredients = { ...this.state.ingredients };
     updatedIngredients[type]++;
     const oldPrice = this.state.totalPrice;
     const newPrice = oldPrice + INGREDIENT_PRICES[type];
     this.setState({ ingredients: updatedIngredients, totalPrice: newPrice });
-    console.log(this.state);
+    this.updatePurchaseState(updatedIngredients);
   };
   removeIngredientsHandler = (type) => {
     const updatedIngredients = { ...this.state.ingredients };
@@ -36,6 +51,7 @@ class BurgerBuilder extends Component {
     const oldPrice = this.state.totalPrice;
     const newPrice = oldPrice - INGREDIENT_PRICES[type];
     this.setState({ ingredients: updatedIngredients, totalPrice: newPrice });
+    this.updatePurchaseState(updatedIngredients);
   };
   render() {
     const disabledInfo = { ...this.state.ingredients };
@@ -44,11 +60,13 @@ class BurgerBuilder extends Component {
     }
     return (
       <Auxi>
+        <Modal />
         <Burger ingredients={this.state.ingredients}></Burger>
         <BuildControls
           ingredientsAdded={this.addIngredientsHandler}
           ingredientsRemoved={this.removeIngredientsHandler}
           disabled={disabledInfo}
+          purchaseable={this.state.purchaseable}
           price={this.state.totalPrice}
         />
       </Auxi>
