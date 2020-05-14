@@ -6,11 +6,14 @@ import Backdrop from "../../UI/Backdrop/Backdrop";
 import Auxi from "../../../hoc/Auxi";
 
 const sideDrawer = (props) => {
-  const attachedClasses = [classes.SideDrawer, classes.Close];
+  let attachedClasses = [classes.SideDrawer, classes.Close];
+  if (props.open) {
+    attachedClasses = [classes.SideDrawer, classes.Open];
+  }
   return (
     <Auxi>
       <Backdrop show={props.open} clicked={props.closed} />
-      <div className={classes.SideDrawer}>
+      <div className={attachedClasses.join(" ")}>
         <div className={classes.Logo}>
           <Logo />
         </div>
